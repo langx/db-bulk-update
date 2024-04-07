@@ -45,16 +45,36 @@ function listAllDocuments(offset) {
     .then((response) => {
       console.log(`Fetched ${response.documents.length} documents`);
       console.log(`Total documents: ${response.total}`);
+
       response.documents.forEach((doc) => {
         const profileId = doc.$id;
         const profilePhotoId = doc.profilePhoto
           .split("/files/")[1]
           .split("/view")[0];
         const profilePic = doc.profilePic;
+        const otherPhotos = doc.otherPhotos;
+        const otherPics = doc.otherPics || [];
 
         console.log(
           `Profile ID: ${profileId}, Profile photo ID: ${profilePhotoId}, Profile Pic: ${profilePic}`
         );
+
+        // Extract photo IDs from otherPhotos and update otherPics if it's not the same
+        if (otherPhotos) {
+          const otherPhotoIds = otherPhotos.map(
+            (photoUrl) => photoUrl.split("/files/")[1].split("/view")[0]
+          );
+
+          console.log(`Other Photo IDs: ${otherPhotoIds}`);
+
+          if (JSON.stringify(otherPhotoIds) !== JSON.stringify(otherPics)) {
+            updateDocument(profileId, { otherPics: otherPhotoIds });
+          } else {
+            console.log(
+              `Other Pics for document ${profileId} is already up to date.`
+            );
+          }
+        }
 
         // Update the document only if profilePic is not the same as profilePhotoId
         if (profilePic !== profilePhotoId) {
@@ -67,6 +87,7 @@ function listAllDocuments(offset) {
       });
 
       if (offset + LIMIT < response.total) {
+        // if (offset + LIMIT < 100) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
