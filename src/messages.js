@@ -45,10 +45,31 @@ function listAllDocuments(offset) {
       console.log(`Fetched ${response.documents.length} documents`);
       console.log(`Total documents: ${response.total}`);
 
+      response.documents.forEach((doc) => {
+        const docId = doc.$id;
+        const imageType = doc.type;
+        const imageUrl = doc.image;
+
+        if (imageType === "image") {
+          const imageId = imageUrl.split("/files/")[1].split("/view")[0];
+
+          if (doc.imageId !== imageId) {
+            console.log(
+              `Document with ID ${docId} has a new image ID: ${imageId}`
+            );
+            // Update the document with the new imageID
+            updateDocument(docId, { imageId: imageId });
+          } else {
+            console.log(
+              `Image ID for document ${docId} is already up to date.`
+            );
+          }
+        }
+      });
+
       // Add your logic for messages here
 
-      if (offset + LIMIT < 300) {
-        // if (offset + LIMIT < response.total) {
+      if (offset + LIMIT < response.total) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
