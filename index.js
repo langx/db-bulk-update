@@ -19,6 +19,21 @@ console.log("Database instance created");
 let OFFSET = 0;
 const LIMIT = 25;
 
+function updateDocument(docId, data) {
+  db.updateDocument(
+    process.env.APP_DATABASE,
+    process.env.USERS_COLLECTION,
+    docId,
+    data
+  )
+    .then((response) => {
+      console.log(`Document ${docId} updated successfully`);
+    })
+    .catch((error) => {
+      console.error(`Error updating document ${docId}: ${error}`);
+    });
+}
+
 function listAllDocuments(offset) {
   console.log(`Fetching documents with offset: ${offset}`);
 
@@ -40,10 +55,18 @@ function listAllDocuments(offset) {
         console.log(
           `Profile ID: ${profileId}, Profile photo ID: ${profilePhotoId}, Profile Pic: ${profilePic}`
         );
+
+        // Update the document only if profilePic is not the same as profilePhotoId
+        if (profilePic !== profilePhotoId) {
+          updateDocument(profileId, { profilePic: profilePhotoId });
+        } else {
+          console.log(
+            `Profile Pic for document ${profileId} is already up to date.`
+          );
+        }
       });
 
-      // if (offset + LIMIT < response.total) {
-      if (offset + LIMIT < 26) {
+      if (offset + LIMIT < response.total) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
