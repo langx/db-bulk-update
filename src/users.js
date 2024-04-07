@@ -16,7 +16,6 @@ let db = new sdk.Databases(client);
 
 console.log("Database instance created");
 
-let OFFSET = 0;
 const LIMIT = 25;
 
 function updateDocument(docId, data) {
@@ -86,8 +85,8 @@ function listAllDocuments(offset) {
         }
       });
 
-      if (offset + LIMIT < response.total) {
-        // if (offset + LIMIT < 100) {
+      // if (offset + LIMIT < response.total) {
+      if (offset + LIMIT < 100) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
@@ -98,4 +97,4 @@ function listAllDocuments(offset) {
     });
 }
 
-listAllDocuments(OFFSET);
+module.exports = listAllDocuments;
