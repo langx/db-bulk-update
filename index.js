@@ -30,11 +30,20 @@ function listAllDocuments(offset) {
     .then((response) => {
       console.log(`Fetched ${response.documents.length} documents`);
       console.log(`Total documents: ${response.total}`);
-      response.documents.forEach((doc) =>
-        console.log(`Profile photo: ${doc.profilePhoto}`)
-      );
+      response.documents.forEach((doc) => {
+        const profileId = doc.$id;
+        const profilePhotoId = doc.profilePhoto
+          .split("/files/")[1]
+          .split("/view")[0];
+        const profilePic = doc.profilePic;
 
-      if (offset + LIMIT < response.total) {
+        console.log(
+          `Profile ID: ${profileId}, Profile photo ID: ${profilePhotoId}, Profile Pic: ${profilePic}`
+        );
+      });
+
+      // if (offset + LIMIT < response.total) {
+      if (offset + LIMIT < 26) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
