@@ -40,7 +40,7 @@ function listAllDocuments(offset) {
     sdk.Query.orderAsc("$id"),
     sdk.Query.offset(offset),
     sdk.Query.limit(LIMIT),
-    sdk.Query.equal("type", "image"),
+    sdk.Query.notEqual("type", "body"),
   ])
     .then((response) => {
       console.log(`Fetched ${response.documents.length} documents`);
@@ -63,6 +63,22 @@ function listAllDocuments(offset) {
           } else {
             console.log(
               `Image ID for document ${docId} is already up to date.`
+            );
+          }
+        }
+
+        if (doc.type === "audio") {
+          const audioId = doc.audio.split("/files/")[1].split("/view")[0];
+
+          if (doc.audioId !== audioId) {
+            console.log(
+              `Document with ID ${doc.$id} has a new audio ID: ${audioId}`
+            );
+            // Update the document with the new audioID
+            updateDocument(doc.$id, { audioId: audioId });
+          } else {
+            console.log(
+              `Audio ID for document ${doc.$id} is already up to date.`
             );
           }
         }
