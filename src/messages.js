@@ -40,6 +40,7 @@ function listAllDocuments(offset) {
     sdk.Query.orderAsc("$id"),
     sdk.Query.offset(offset),
     sdk.Query.limit(LIMIT),
+    sdk.Query.equal("type", "image"),
   ])
     .then((response) => {
       console.log(`Fetched ${response.documents.length} documents`);
