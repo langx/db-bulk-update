@@ -32,6 +32,7 @@ function updateDocument(docId, data) {
       console.error(`Error updating document ${docId}: ${error}`);
     });
 }
+
 function listAllDocuments(offset) {
   console.log(`Fetching documents with offset: ${offset}`);
 
@@ -50,6 +51,19 @@ function listAllDocuments(offset) {
         const languages = doc.languages || [];
         const languageArray = doc.languageArray || [];
 
+        // Initialize motherLanguages and studyLanguages arrays
+        const motherLanguages = [];
+        const studyLanguages = [];
+
+        // Check each language
+        languages.forEach((lang) => {
+          if (lang.motherLanguage) {
+            motherLanguages.push(lang.name);
+          } else {
+            studyLanguages.push(lang.name);
+          }
+        });
+
         // Log each language name
         const languageNames = languages.map((lang) => lang.name);
 
@@ -67,23 +81,20 @@ function listAllDocuments(offset) {
               ", "
             )}\nDifferences: \x1b[31m${differences.join(", ")}\x1b[0m\n`
           );
-
-          // Update the document
-          db.updateDocument(
-            process.env.APP_DATABASE,
-            process.env.USERS_COLLECTION,
-            profileId,
-            {
-              languageArray: languageNames,
-            }
-          )
-            .then(() => {
-              console.log(`Updated document with ID: ${profileId}`);
-            })
-            .catch((error) => {
-              console.error(`Error updating document: ${error}`);
-            });
         }
+
+        console.log(
+          `Mother Languages: ${motherLanguages.join(
+            ", "
+          )},\nStudy Languages: ${studyLanguages.join(", ")}\n`
+        );
+
+        // Commented out the update document function for testing
+        updateDocument(profileId, {
+          languageArray: languageNames,
+          motherLanguages: motherLanguages,
+          studyLanguages: studyLanguages,
+        });
       });
 
       if (offset + LIMIT < response.total) {
