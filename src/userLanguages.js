@@ -18,6 +18,20 @@ console.log("Database instance created");
 
 const LIMIT = 25;
 
+function updateDocument(docId, data) {
+  db.updateDocument(
+    process.env.APP_DATABASE,
+    process.env.USERS_COLLECTION,
+    docId,
+    data
+  )
+    .then((response) => {
+      console.log(`Document ${docId} updated successfully`);
+    })
+    .catch((error) => {
+      console.error(`Error updating document ${docId}: ${error}`);
+    });
+}
 function listAllDocuments(offset) {
   console.log(`Fetching documents with offset: ${offset}`);
 
@@ -44,13 +58,16 @@ function listAllDocuments(offset) {
           (x) => !languageNames.includes(x)
         );
 
-        console.log(
-          `Profile ID: ${profileId},\nProfile Name: ${profileName},\nLanguagesArray: ${JSON.stringify(
-            languageArray
-          )}\nLanguages: ${languageNames.join(
-            ", "
-          )}\nDifferences: \x1b[31m${differences.join(", ")}\x1b[0m\n`
-        );
+        // Only log when there are differences
+        if (differences.length > 0) {
+          console.log(
+            `Profile ID: ${profileId},\nProfile Name: ${profileName},\nLanguagesArray: ${JSON.stringify(
+              languageArray
+            )}\nLanguages: ${languageNames.join(
+              ", "
+            )}\nDifferences: \x1b[31m${differences.join(", ")}\x1b[0m\n`
+          );
+        }
       });
 
       if (offset + LIMIT < response.total) {
