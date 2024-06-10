@@ -50,6 +50,8 @@ function listAllDocuments(offset) {
         const profileName = doc.name;
         const languages = doc.languages || [];
         const languageArray = doc.languageArray || [];
+        const oldMotherLanguages = doc.motherLanguages || [];
+        const oldStudyLanguages = doc.studyLanguages || [];
 
         // Initialize motherLanguages and studyLanguages arrays
         const motherLanguages = [];
@@ -67,34 +69,80 @@ function listAllDocuments(offset) {
         // Log each language name
         const languageNames = languages.map((lang) => lang.name);
 
+        // Function to find differences between two arrays
+        function findDifferences(oldArray, newArray) {
+          const differencesOld = oldArray.filter((x) => !newArray.includes(x));
+          const differencesNew = newArray.filter((x) => !oldArray.includes(x));
+          return differencesOld.concat(differencesNew);
+        }
+
         // Find the differences between the two arrays
-        const differences = languageArray.filter(
-          (x) => !languageNames.includes(x)
+        const differencesLanguageArray = findDifferences(
+          languageArray,
+          languageNames
+        );
+        const differencesMotherLanguages = findDifferences(
+          oldMotherLanguages,
+          motherLanguages
+        );
+        const differencesStudyLanguages = findDifferences(
+          oldStudyLanguages,
+          studyLanguages
         );
 
+        // if (profileId === "65a60b69e64d736fd0bc") {
+        //   console.log(
+        //     `Profile ID: ${profileId},\nProfile Name: ${profileName},\nLanguagesArray: ${JSON.stringify(
+        //       languageArray
+        //     )}\nLanguages: ${languageNames.join(
+        //       ", "
+        //     )}\nDifferences in Language Array: \x1b[31m${differencesLanguageArray.join(
+        //       ", "
+        //     )}\x1b[0m\nDifferences in Mother Languages: \x1b[31m${differencesMotherLanguages.join(
+        //       ", "
+        //     )}\x1b[0m\nDifferences in Study Languages: \x1b[31m${differencesStudyLanguages.join(
+        //       ", "
+        //     )}\x1b[0m\n`
+        //   );
+
+        //   console.log(`Old Mother Languages: ${oldMotherLanguages.join(", ")}`);
+        //   console.log(`New Mother Languages: ${motherLanguages.join(", ")}`);
+        //   console.log(`Old Study Languages: ${oldStudyLanguages.join(", ")}`);
+        //   console.log(`New Study Languages: ${studyLanguages.join(", ")}`);
+        // }
+
         // Only log and update when there are differences
-        if (differences.length > 0) {
+        if (
+          differencesLanguageArray.length > 0 ||
+          differencesMotherLanguages.length > 0 ||
+          differencesStudyLanguages.length > 0
+        ) {
           console.log(
             `Profile ID: ${profileId},\nProfile Name: ${profileName},\nLanguagesArray: ${JSON.stringify(
               languageArray
             )}\nLanguages: ${languageNames.join(
               ", "
-            )}\nDifferences: \x1b[31m${differences.join(", ")}\x1b[0m\n`
+            )}\nDifferences in Language Array: \x1b[31m${differencesLanguageArray.join(
+              ", "
+            )}\x1b[0m\nDifferences in Mother Languages: \x1b[31m${differencesMotherLanguages.join(
+              ", "
+            )}\x1b[0m\nDifferences in Study Languages: \x1b[31m${differencesStudyLanguages.join(
+              ", "
+            )}\x1b[0m\n`
           );
+
+          console.log(
+            `Mother Languages: ${motherLanguages.join(
+              ", "
+            )},\nStudy Languages: ${studyLanguages.join(", ")}\n`
+          );
+
+          updateDocument(profileId, {
+            languageArray: languageNames,
+            motherLanguages: motherLanguages,
+            studyLanguages: studyLanguages,
+          });
         }
-
-        console.log(
-          `Mother Languages: ${motherLanguages.join(
-            ", "
-          )},\nStudy Languages: ${studyLanguages.join(", ")}\n`
-        );
-
-        // Commented out the update document function for testing
-        updateDocument(profileId, {
-          languageArray: languageNames,
-          motherLanguages: motherLanguages,
-          studyLanguages: studyLanguages,
-        });
       });
 
       if (offset + LIMIT < response.total) {
