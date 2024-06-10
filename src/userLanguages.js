@@ -58,7 +58,7 @@ function listAllDocuments(offset) {
           (x) => !languageNames.includes(x)
         );
 
-        // Only log when there are differences
+        // Only log and update when there are differences
         if (differences.length > 0) {
           console.log(
             `Profile ID: ${profileId},\nProfile Name: ${profileName},\nLanguagesArray: ${JSON.stringify(
@@ -67,6 +67,22 @@ function listAllDocuments(offset) {
               ", "
             )}\nDifferences: \x1b[31m${differences.join(", ")}\x1b[0m\n`
           );
+
+          // Update the document
+          db.updateDocument(
+            process.env.APP_DATABASE,
+            process.env.USERS_COLLECTION,
+            profileId,
+            {
+              languageArray: languageNames,
+            }
+          )
+            .then(() => {
+              console.log(`Updated document with ID: ${profileId}`);
+            })
+            .catch((error) => {
+              console.error(`Error updating document: ${error}`);
+            });
         }
       });
 
