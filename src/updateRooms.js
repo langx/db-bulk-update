@@ -61,7 +61,7 @@ function listAllDocuments(offset) {
         console.log();
       });
 
-      if (offset + LIMIT < response.total) {
+      if (offset + LIMIT < response.total + 1000) {
         listAllDocuments(offset + LIMIT);
       } else {
         console.log("Finished fetching all documents");
