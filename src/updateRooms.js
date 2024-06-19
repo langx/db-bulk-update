@@ -77,7 +77,7 @@ async function listAllDocuments(offset) {
       }
     }
 
-    if (offset + LIMIT < response.total) {
+    if (offset + LIMIT < 6000) {
       await listAllDocuments(offset + LIMIT);
     } else {
       console.log("Finished fetching all documents");
