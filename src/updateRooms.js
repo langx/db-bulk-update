@@ -18,58 +18,73 @@ console.log("Database instance created");
 
 const LIMIT = 25;
 
-function updateDocument(docId, data) {
-  db.updateDocument(
-    process.env.APP_DATABASE,
-    process.env.ROOMS_COLLECTION,
-    docId,
-    data
-  )
-    .then((response) => {
-      console.log(`Document ${docId} updated successfully`);
-    })
-    .catch((error) => {
-      console.error(`Error updating document ${docId}: ${error}`);
-    });
+async function updateDocument(docId, data) {
+  try {
+    const updatedRoom = await db.updateDocument(
+      process.env.APP_DATABASE,
+      process.env.ROOMS_COLLECTION,
+      docId,
+      data
+    );
+    console.log(`Document ${docId} updated successfully: ${updatedRoom}`);
+  } catch (error) {
+    console.error(`Error updating document ${docId}: ${error}`);
+  }
 }
 
-function listAllDocuments(offset) {
+async function listAllDocuments(offset) {
   console.log(`Fetching documents with offset: ${offset}`);
 
-  db.listDocuments(process.env.APP_DATABASE, process.env.ROOMS_COLLECTION, [
-    sdk.Query.orderAsc("$createdAt"),
-    sdk.Query.offset(offset),
-    sdk.Query.limit(LIMIT),
-  ])
-    .then((response) => {
-      console.log(`Fetched ${response.documents.length} documents`);
-      console.log(`Total documents: ${response.total}`);
+  try {
+    const response = await db.listDocuments(
+      process.env.APP_DATABASE,
+      process.env.ROOMS_COLLECTION,
+      [
+        sdk.Query.orderAsc("$updatedAt"),
+        sdk.Query.offset(offset),
+        sdk.Query.limit(LIMIT),
+      ]
+    );
 
-      response.documents.forEach((doc) => {
-        const roomId = doc.$id;
-        let users = doc.users;
-        if (users[0] > users[1]) {
-          console.log("its ok", users);
-        } else {
-          console.log("its not ok", users);
-          users = users.reverse();
-          updateDocument(roomId, {
-            users: users,
-          });
-          console.log("updated", users);
+    console.log(`Fetched ${response.documents.length} documents`);
+    console.log(`Total documents: ${response.total}`);
+
+    for (const doc of response.documents) {
+      const listMessages = await db.listDocuments(
+        process.env.APP_DATABASE,
+        process.env.MESSAGES_COLLECTION,
+        [sdk.Query.equal("roomId", doc.$id), sdk.Query.orderDesc("$createdAt")]
+      );
+
+      // Define unseen
+      let unseen = [0, 0];
+
+      listMessages.documents.forEach((message) => {
+        if (!message.seen) {
+          if (message.to > message.sender) {
+            unseen[0] += 1;
+          } else {
+            unseen[1] += 1;
+          }
         }
-        console.log();
       });
 
-      if (offset + LIMIT < response.total + 1000) {
-        listAllDocuments(offset + LIMIT);
-      } else {
-        console.log("Finished fetching all documents");
+      console.log(`before: ${doc.unseen}, after: ${unseen}`);
+      if (unseen.toString() !== doc.unseen.toString()) {
+        console.log("Updating unseen");
+        console.log(doc.$id);
+        await updateDocument(doc.$id, { unseen: unseen });
       }
-    })
-    .catch((error) => {
-      console.error(`Error fetching documents: ${error}`);
-    });
+    }
+
+    if (offset + LIMIT < response.total) {
+      await listAllDocuments(offset + LIMIT);
+    } else {
+      console.log("Finished fetching all documents");
+    }
+  } catch (error) {
+    console.error(`Error fetching documents: ${error}`);
+  }
 }
 
 module.exports = listAllDocuments;
