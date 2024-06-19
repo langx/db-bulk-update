@@ -51,11 +51,12 @@ function listAllDocuments(offset) {
         if (users[0] > users[1]) {
           console.log("its ok", users);
         } else {
-          users = users.reverse();
           console.log("its not ok", users);
-          // updateDocument(roomId, {
-          //   users: users,
-          // });
+          users = users.reverse();
+          updateDocument(roomId, {
+            users: users,
+          });
+          console.log("updated", users);
         }
         console.log();
       });
