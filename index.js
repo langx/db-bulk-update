@@ -5,6 +5,7 @@
 // const processUserBadges = require("./src/userBadges.js");
 // const processCheckoutTotalAmount = require("./src/checkoutTotalAmount.js");
 // const processSetUsername = require("./src/setUsername.js");
+const processUpdateRooms = require("./src/updateRooms.js");
 
 async function processAll() {
   // processUsers(0);
@@ -13,6 +14,7 @@ async function processAll() {
   // processUserBadges(0);
   // processCheckoutTotalAmount(0);
   // processSetUsername(0);
+  processUpdateRooms(0);
 }
 
 processAll();
