@@ -6,6 +6,7 @@
 // const processCheckoutTotalAmount = require("./src/checkoutTotalAmount.js");
 // const processSetUsername = require("./src/setUsername.js");
 // const processUpdateRooms = require("./src/updateRooms.js");
+// const processUpdateRoomsForDeletedUsers = require("./src/updateRoomsForDeletedUsers.js");
 
 async function processAll() {
   // processUsers(0);
@@ -15,6 +16,7 @@ async function processAll() {
   // processCheckoutTotalAmount(0);
   // processSetUsername(0);
   // processUpdateRooms(0);
+  // processUpdateRoomsForDeletedUsers(0);
 }
 
 processAll();
