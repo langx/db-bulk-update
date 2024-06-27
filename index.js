@@ -7,6 +7,8 @@
 // const processSetUsername = require("./src/setUsername.js");
 // const processUpdateRooms = require("./src/updateRooms.js");
 // const processUpdateRoomsForDeletedUsers = require("./src/updateRoomsForDeletedUsers.js");
+// const processUpdateRoomsForLastMessage = require("./src/updateRoomsForLastMessage.js");
+const processBucketsPermissions = require("./src/bucketsPermissions.js");
 
 async function processAll() {
   // processUsers(0);
@@ -17,6 +19,8 @@ async function processAll() {
   // processSetUsername(0);
   // processUpdateRooms(0);
   // processUpdateRoomsForDeletedUsers(0);
+  // processUpdateRoomsForLastMessage(0);
+  processBucketsPermissions(0);
 }
 
 processAll();
