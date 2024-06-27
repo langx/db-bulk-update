@@ -8,7 +8,8 @@
 // const processUpdateRooms = require("./src/updateRooms.js");
 // const processUpdateRoomsForDeletedUsers = require("./src/updateRoomsForDeletedUsers.js");
 // const processUpdateRoomsForLastMessage = require("./src/updateRoomsForLastMessage.js");
-const processBucketsPermissions = require("./src/bucketsPermissions.js");
+const processBucketsPermissionsForAudio = require("./src/bucketsPermissionsForAudio.js");
+const processBucketsPermissionsForImage = require("./src/bucketsPermissionsForImage.js");
 
 async function processAll() {
   // processUsers(0);
@@ -20,7 +21,8 @@ async function processAll() {
   // processUpdateRooms(0);
   // processUpdateRoomsForDeletedUsers(0);
   // processUpdateRoomsForLastMessage(0);
-  processBucketsPermissions(0);
+  processBucketsPermissionsForAudio(0);
+  processBucketsPermissionsForImage(0);
 }
 
 processAll();

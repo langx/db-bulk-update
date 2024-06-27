@@ -20,7 +20,7 @@ const LIMIT = 25;
 
 function updateFile(fileId, permissions) {
   storage
-    .updateFile(process.env.AUDIO_BUCKET, fileId, undefined, permissions)
+    .updateFile(process.env.MESSAGE_BUCKET, fileId, undefined, permissions)
     .then((response) => {
       console.log(`file ${fileId} updated successfully`);
     })
@@ -36,17 +36,20 @@ function listAllDocuments(offset) {
     sdk.Query.offset(offset),
     sdk.Query.limit(LIMIT),
     sdk.Query.orderDesc("$createdAt"),
-    sdk.Query.isNotNull("audioId"),
+    sdk.Query.isNotNull("imageId"),
   ])
     .then((response) => {
       console.log(`Fetched ${response.documents.length} documents`);
       console.log(`Total documents: ${response.total}`);
 
       response.documents.forEach(async (doc) => {
-        const fileId = doc.audioId;
+        const fileId = doc.imageId;
 
         try {
-          const file = await storage.getFile(process.env.AUDIO_BUCKET, fileId);
+          const file = await storage.getFile(
+            process.env.MESSAGE_BUCKET,
+            fileId
+          );
           // console.log(file);
           const room = await db.getDocument(
             process.env.APP_DATABASE,
@@ -60,9 +63,9 @@ function listAllDocuments(offset) {
             sdk.Permission.read(sdk.Role.user(room.users[1])),
           ];
 
-          console.log(
-            `File ${fileId} permissions: ${file.$permissions} - ${file.$permissions.length}`
-          );
+          // console.log(
+          //   `File ${fileId} permissions: ${file.$permissions} - ${file.$permissions.length}`
+          // );
 
           if (file.$permissions.length > 2) {
             console.log(`File ${fileId} doesnt updated`);
@@ -71,10 +74,6 @@ function listAllDocuments(offset) {
         } catch (error) {
           console.error(`Error fetching file ${fileId}: ${error}`);
         }
-
-        // updateDocument(profileId, {
-        //   badges: badges,
-        // });
       });
 
       if (offset + LIMIT < response.total) {
